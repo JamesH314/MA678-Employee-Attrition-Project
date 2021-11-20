@@ -1,0 +1,37 @@
+---
+title: "Midterm Project"
+author: "Yifeng He"
+date: "November 20, 2021"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,out.width="0.9\\linewidth",dev="png",fig.align  = 'center')
+pacman::p_load(
+ggplot2,
+knitr,
+arm,
+data.table,
+foreign,
+gridExtra,
+car,
+stringr,
+rstan,
+rstanarm,
+zoo,
+dplyr,
+tidyr,
+magrittr
+)
+```
+
+
+```{r}
+attrition <- read.csv('WA_Fn-UseC_-HR-Employee-Attrition.csv', header = T)
+head(attrition)
+levels(as.factor(attrition$JobRole))
+
+```
+
