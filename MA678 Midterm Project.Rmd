@@ -31,7 +31,91 @@ magrittr
 ```{r}
 attrition <- read.csv('WA_Fn-UseC_-HR-Employee-Attrition.csv', header = T)
 head(attrition)
-levels(as.factor(attrition$JobRole))
 
+
+#convert columns to numeric
+cols.num <- c("DistanceFromHome","Age","EnvironmentSatisfaction","MonthlyIncome","TotalWorkingYears","YearsSinceLastPromotion")
+attrition[cols.num] <- sapply(attrition[cols.num],as.numeric)
+sapply(attrition, class)
+
+attrition$Attrition<-ifelse(attrition$Attrition=="Yes",1,0)
+
+head(attrition)
+
+#variables I choose
+col1 <- c("Age","Distance From Home","Environment Satisfaction","Monthly Income","Total Working Years","Years Since Last Promotion")
+exp1 <- c("Age of the employee",
+          "Distance from company to home",
+          "Satisfaction of working environment with 4 levels",
+          "Monthly income of employee",
+          "Working years since the first career",
+          "Working years since last promotion")
+df1 <- cbind(col1, exp1)
+colnames(df1) <- c("Variables", "Explanation")
+knitr::kable(df1, "pipe")
+```
+
+|Variables                  |Explanation                                       |
+|:--------------------------|:-------------------------------------------------|
+|Age                        |Age of the employee                               |
+|Distance From Home         |Distance from company to home                     |
+|Environment Satisfaction   |Satisfaction of working environment with 4 levels |
+|Monthly Income             |Monthly income of employee                        |
+|Total Working Years        |Working years since the first career              |
+|Years Since Last Promotion |Working years since last promotion                |
+
+
+
+```{r}
+#bar plots EDA
+ggplot(attrition, aes(fill=Attrition, y=DistanceFromHome, x=JobRole)) + 
+    geom_bar(position="stack", stat="identity")
+
+ggplot(attrition, aes(fill=Attrition, y=Age, x=JobRole)) + 
+    geom_bar(position="stack", stat="identity")
+
+ggplot(attrition, aes(fill=Attrition, y=EnvironmentSatisfaction, x=JobRole)) + 
+    geom_bar(position="stack", stat="identity")
+
+ggplot(attrition, aes(fill=Attrition, y=MonthlyIncome, x=JobRole)) + 
+    geom_bar(position="stack", stat="identity")
+
+ggplot(attrition, aes(fill=Attrition, y=TotalWorkingYears, x=JobRole)) + 
+    geom_bar(position="stack", stat="identity")
+
+ggplot(attrition, aes(fill=Attrition, y=YearsSinceLastPromotion, x=JobRole)) + 
+    geom_bar(position="stack", stat="identity")
+
+#scatter plots EDA
+ggplot(data=attrition)+
+  geom_point(aes(x=Age,y=Attrition,color=JobRole), alpha = 0.3)+
+  geom_smooth(aes(x=Age,y=Attrition,color=JobRole), method = "lm", se = FALSE)
+
+ggplot(data=attrition)+
+  geom_point(aes(x=DistanceFromHome,y=Attrition,color=JobRole), alpha = 0.3)+
+  geom_smooth(aes(x=DistanceFromHome,y=Attrition,color=JobRole), method = "lm", se = FALSE)
+
+ggplot(data=attrition)+
+  geom_point(aes(x=MonthlyIncome,y=Attrition,color=JobRole), alpha = 0.3)+
+  geom_smooth(aes(x=MonthlyIncome,y=Attrition,color=JobRole), method = "lm", se = FALSE)
+
+ggplot(data=attrition)+
+  geom_point(aes(x=EnvironmentSatisfaction,y=Attrition,color=JobRole), alpha = 0.3)+
+  geom_smooth(aes(x=EnvironmentSatisfaction,y=Attrition,color=JobRole), method = "lm", se = FALSE)
+
+ggplot(data=attrition)+
+  geom_point(aes(x=TotalWorkingYears,y=Attrition,color=JobRole), alpha = 0.3)+
+  geom_smooth(aes(x=TotalWorkingYears,y=Attrition,color=JobRole), method = "lm", se = FALSE)
+
+ggplot(data=attrition)+
+  geom_point(aes(x=YearsSinceLastPromotion,y=Attrition,color=JobRole), alpha = 0.3)+
+  geom_smooth(aes(x=YearsSinceLastPromotion,y=Attrition,color=JobRole), method = "lm", se = FALSE)
+
+
+#regression
+fit1<-glmer(as.factor(Attrition)~Age+DistanceFromHome+EnvironmentSatisfaction+MonthlyIncome+TotalWorkingYears+YearsSinceLastPromotion+(1|JobRole) ,data = attrition, family = binomial(link = "logit"))
+fixef(fit1)
+round(fixef(fit1), digits = 5)
+ranef(fit1)
 ```
 
