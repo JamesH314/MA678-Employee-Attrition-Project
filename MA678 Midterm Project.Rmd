@@ -157,19 +157,13 @@ round(fixef(fit1), digits = 5)
 ranef(fit1)
 
 
-
-fit3<-glmer(Attrition~Age+DistanceFromHome+YearsSinceLastPromotion+TotalWorkingYears+(1+Age|JobRole)+(1+YearsSinceLastPromotion|JobRole)+(1+TotalWorkingYears|JobRole)+(1+DistanceFromHome|JobRole),data = attrition, family = binomial(link = "logit"))
 ```
 
 
 ```{r}
-b1<-binnedplot(fitted(fit1),resid(fit1), nclass=NULL, 
-      xlab="Expected Values", ylab="Average residual", 
-      main="Binned residual plot", 
-      cex.pts=0.8, col.pts=1, col.int="gray")
+b1<-binnedplot(fitted(fit1),resid(fit1, type = "response"))
 
 
-binnedplot(fitted(fit3),resid(fit3))
 ```
 
 
