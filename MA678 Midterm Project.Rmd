@@ -23,7 +23,13 @@ rstanarm,
 zoo,
 dplyr,
 tidyr,
-magrittr
+magrittr,
+hrbrthemes,
+ggExtra,
+stringr,
+viridis,
+ggridges,
+sure
 )
 ```
 
@@ -89,7 +95,8 @@ ggplot(attrition, aes(fill=Attrition, y=YearsSinceLastPromotion, x=JobRole)) +
 #scatter plots EDA
 ggplot(data=attrition)+
   geom_point(aes(x=Age,y=Attrition,color=JobRole), alpha = 0.3)+
-  geom_smooth(aes(x=Age,y=Attrition,color=JobRole), method = "lm", se = FALSE)
+  geom_smooth(aes(x=Age,y=Attrition,color=JobRole), method = "lm", se = FALSE)+
+  theme_ipsum()
 
 ggplot(data=attrition)+
   geom_point(aes(x=DistanceFromHome,y=Attrition,color=JobRole), alpha = 0.3)+
@@ -111,11 +118,58 @@ ggplot(data=attrition)+
   geom_point(aes(x=YearsSinceLastPromotion,y=Attrition,color=JobRole), alpha = 0.3)+
   geom_smooth(aes(x=YearsSinceLastPromotion,y=Attrition,color=JobRole), method = "lm", se = FALSE)
 
+#marginal distribution EDA
+p <- ggplot(attrition, aes(x=MonthlyIncome,y=Attrition,color=JobRole)) +
+        geom_point()
 
+ggMarginal(p, type="density")
+ggMarginal(p, type="histogram", fill = "slateblue", xparams = list(bins=10), margins = 'x')
+ggMarginal(p, margins = 'x', color="purple", size=4)
+
+#other EDAs
+ggplot(attrition, aes(x=MonthlyIncome,y=JobRole,color=JobRole)) +
+  geom_density_ridges() +
+  theme_ridges() + 
+  theme(legend.position = "none")
+
+ggplot(attrition, aes(x = `MonthlyIncome`, y = `JobRole`, fill = ..x..)) +
+  geom_density_ridges_gradient(scale = 3, rel_min_height = 0.01) +
+  scale_fill_viridis(name = "Temp. [F]", option = "C") +
+  labs(title = 'Temperatures in Lincoln NE in 2016') +
+  theme_ipsum() +
+    theme(
+      legend.position="none",
+      panel.spacing = unit(0.1, "lines"),
+      strip.text.x = element_text(size = 8)
+    )
+
+ggplot(attrition, aes(x=Age, y=Attrition, size = MonthlyIncome, color = JobRole)) +
+    geom_point(alpha=0.7)
+```
+
+
+
+```{r}
 #regression
-fit1<-glmer(as.factor(Attrition)~Age+DistanceFromHome+EnvironmentSatisfaction+MonthlyIncome+TotalWorkingYears+YearsSinceLastPromotion+(1|JobRole) ,data = attrition, family = binomial(link = "logit"))
+fit1<-glmer(Attrition~Age+DistanceFromHome+EnvironmentSatisfaction+MonthlyIncome+TotalWorkingYears+YearsSinceLastPromotion+(1|JobRole) ,data = attrition, family = binomial(link = "logit"))
 fixef(fit1)
 round(fixef(fit1), digits = 5)
 ranef(fit1)
+
+
+
+fit3<-glmer(Attrition~Age+DistanceFromHome+YearsSinceLastPromotion+TotalWorkingYears+(1+Age|JobRole)+(1+YearsSinceLastPromotion|JobRole)+(1+TotalWorkingYears|JobRole)+(1+DistanceFromHome|JobRole),data = attrition, family = binomial(link = "logit"))
 ```
+
+
+```{r}
+b1<-binnedplot(fitted(fit1),resid(fit1), nclass=NULL, 
+      xlab="Expected Values", ylab="Average residual", 
+      main="Binned residual plot", 
+      cex.pts=0.8, col.pts=1, col.int="gray")
+
+
+binnedplot(fitted(fit3),resid(fit3))
+```
+
 
