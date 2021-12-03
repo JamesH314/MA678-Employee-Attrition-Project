@@ -30,7 +30,8 @@ stringr,
 viridis,
 ggridges,
 sure,
-fmsb
+fmsb,
+ggfortify
 )
 ```
 
@@ -39,6 +40,7 @@ fmsb
 attrition <- read.csv('WA_Fn-UseC_-HR-Employee-Attrition.csv', header = T)
 head(attrition)
 
+View(attrition)
 
 #convert columns to numeric
 cols.num <- c("DistanceFromHome","Age","EnvironmentSatisfaction","MonthlyIncome","TotalWorkingYears","YearsSinceLastPromotion")
@@ -48,14 +50,14 @@ sapply(attrition, class)
 attrition$Attrition<-ifelse(attrition$Attrition=="Yes",1,0)
 
 head(attrition)
+View(attrition)
 
 #variables I choose
-col1 <- c("Age","Distance From Home","Environment Satisfaction","Monthly Income","Total Working Years","Years Since Last Promotion")
+col1 <- c("Age","Distance From Home","Monthly Income","Relationship Satifaction","Years Since Last Promotion")
 exp1 <- c("Age of the employee",
           "Distance from company to home",
-          "Satisfaction of working environment with 4 levels",
           "Monthly income of employee",
-          "Working years since the first career",
+          "Satisfaction of relationship",
           "Working years since last promotion")
 df1 <- cbind(col1, exp1)
 colnames(df1) <- c("Variables", "Explanation")
@@ -75,7 +77,7 @@ knitr::kable(df1, "pipe")
 
 ```{r}
 #radar chart
-attr_try <- attrition[,c(1, 2, 6, 11, 19, 25, 35)]
+attr_try <- attrition[,c(1, 2, 6, 19, 26, 34)]
 
 attr1 <- attr_try[attr_try$Attrition == 1, ]
 attr0 <- attr_try[attr_try$Attrition == 0, ]
@@ -110,7 +112,7 @@ legend(x=1.5, y=1.2, legend = c("Attrition", "Not Attrition"), bty = "n", pch=20
 #group box plots
 
 attri_try1 <- pivot_longer(attr_try, 
-                           cols = c(1, 3, 4, 5, 6, 7),
+                           cols = c(1, 3, 4, 5, 6),
                            names_to = "Factors",
                            values_to = "value"
                            )
@@ -125,36 +127,44 @@ ggplot(attri_try1, aes(x=Factors, y=log(value), fill=factor(Attrition))) +
 
 ```{r}
 #scatter plots EDA
-age_point <- ggplot(data=attrition)+
+plot1 <- age_point <- ggplot(data=attrition)+
   geom_point(aes(x=Age,y=Attrition,color=JobRole), alpha = 0.3)+
-  facet_grid(.~Gender)+
   geom_smooth(aes(x=Age,y=Attrition,color=JobRole), method = "lm", se = FALSE)+
-  theme_ipsum()
+  theme_ipsum()+
+  theme(legend.position = "none")
 
-ggplot(data=attrition)+
+plot2 <- ggplot(data=attrition)+
   geom_point(aes(x=DistanceFromHome,y=Attrition,color=JobRole), alpha = 0.3)+
-  facet_grid(.~Gender)+
-  geom_smooth(aes(x=DistanceFromHome,y=Attrition,color=JobRole), method = "lm", se = FALSE)
+  geom_smooth(aes(x=DistanceFromHome,y=Attrition,color=JobRole), method = "lm", se = FALSE)+
+  theme_ipsum()+
+  theme(legend.position = "none")
 
-ggplot(data=attrition)+
+plot3 <- ggplot(data=attrition)+
   geom_point(aes(x=MonthlyIncome,y=Attrition,color=JobRole), alpha = 0.3)+
-  facet_grid(.~Gender)+
   geom_smooth(aes(x=MonthlyIncome,y=Attrition,color=JobRole), method = "lm", se = FALSE)
 
-ggplot(data=attrition)+
-  geom_point(aes(x=EnvironmentSatisfaction,y=Attrition,color=JobRole), alpha = 0.3)+
-  geom_smooth(aes(x=EnvironmentSatisfaction,y=Attrition,color=JobRole), method = "lm", se = FALSE)
+grid.arrange(plot1, plot2, plot3,
+             layout_matrix = rbind(c(1,2),
+                                   c(1,2),
+                                   c(3,3))
+             )
 
-ggplot(data=attrition)+
+plot4 <- ggplot(data=attrition)+
   geom_point(aes(x=RelationshipSatisfaction,y=Attrition,color=JobRole), alpha = 0.3)+
-  facet_grid(.~Gender)+
-  geom_smooth(aes(x=TotalWorkingYears,y=Attrition,color=JobRole), method = "lm", se = FALSE)
+  geom_smooth(aes(x=TotalWorkingYears,y=Attrition,color=JobRole), method = "lm", se = FALSE)+
+  theme_ipsum()+
+  theme(legend.position = "none")
 
-ggplot(data=attrition)+
+plot5 <- ggplot(data=attrition)+
   geom_point(aes(x=YearsSinceLastPromotion,y=Attrition,color=JobRole), alpha = 0.3)+
-  facet_grid(.~Gender)+
   geom_smooth(aes(x=YearsSinceLastPromotion,y=Attrition,color=JobRole), method = "lm", se = FALSE)
 
+grid.arrange(plot4, plot5,
+             layout_matrix = rbind(c(1,1,2,2,2))
+             )
+```
+
+```{r}
 #marginal distribution EDA
 p <- ggplot(attrition, aes(x=MonthlyIncome,y=Attrition,color=JobRole)) +
         geom_point()
@@ -214,7 +224,7 @@ ggplot(attrition, aes(x=Age, y=Attrition, size = MonthlyIncome, color = JobRole)
 
 ```{r}
 #regression
-fit1<-glmer(Attrition~Age+DistanceFromHome+EnvironmentSatisfaction+MonthlyIncome+RelationshipSatisfaction+YearsSinceLastPromotion+(1|JobRole) ,data = attrition, family = binomial(link = "logit"))
+fit1<-glmer(Attrition~Age+DistanceFromHome+MonthlyIncome+RelationshipSatisfaction+YearsSinceLastPromotion+(1|JobRole) ,data = attrition, family = binomial(link = "logit"))
 fixef(fit1)
 round(fixef(fit1), digits = 5)
 ranef(fit1)
