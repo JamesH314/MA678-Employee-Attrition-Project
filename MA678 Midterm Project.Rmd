@@ -1,10 +1,9 @@
 ---
 title: "Midterm Project"
 author: "Yifeng He"
-date: "November 20, 2021"
+date: "December 4, 2021"
 output:
   pdf_document: default
-  html_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -141,7 +140,8 @@ plot2 <- ggplot(data=attrition)+
 
 plot3 <- ggplot(data=attrition)+
   geom_point(aes(x=MonthlyIncome,y=Attrition,color=JobRole), alpha = 0.3)+
-  geom_smooth(aes(x=MonthlyIncome,y=Attrition,color=JobRole), method = "lm", se = FALSE)
+  geom_smooth(aes(x=MonthlyIncome,y=Attrition,color=JobRole), method = "lm", se = FALSE)+
+  theme_ipsum()
 
 grid.arrange(plot1, plot2, plot3,
              layout_matrix = rbind(c(1,2),
@@ -157,11 +157,27 @@ plot4 <- ggplot(data=attrition)+
 
 plot5 <- ggplot(data=attrition)+
   geom_point(aes(x=YearsSinceLastPromotion,y=Attrition,color=JobRole), alpha = 0.3)+
-  geom_smooth(aes(x=YearsSinceLastPromotion,y=Attrition,color=JobRole), method = "lm", se = FALSE)
+  geom_smooth(aes(x=YearsSinceLastPromotion,y=Attrition,color=JobRole), method = "lm", se = FALSE)+
+  theme_ipsum()
 
 grid.arrange(plot4, plot5,
              layout_matrix = rbind(c(1,1,2,2,2))
              )
+
+ggplot(ggucladata)+aes(x=gre,y=admit,color=admit)+
+  theme(legend.position="none")+ 
+  theme(axis.text.x = element_text(angle = 25, hjust = 1,size=5))+
+  geom_jitter()+
+  scale_color_manual(values=c("gray","red"))+
+  geom_smooth(aes(group=1),color="blue")
+
+ggplot(attrition)+aes(x=Age,y=Attrition,color=JobRole)+geom_jitter()+geom_smooth(aes(x=Age,y=Attrition,color=JobRole), method = "lm", se = FALSE)
+
+ggplot(data=attrition)+
+  geom_point(aes(x=Age,y=Attrition,color=JobRole), alpha = 0.3)+
+  theme_ipsum()+
+  geom_jitter()+
+  geom_smooth(aes(x=Age,y=Attrition,color=JobRole),color="blue")
 ```
 
 ```{r}
@@ -225,9 +241,14 @@ ggplot(attrition, aes(x=Age, y=Attrition, size = MonthlyIncome, color = JobRole)
 ```{r}
 #regression
 fit1<-glmer(Attrition~Age+DistanceFromHome+MonthlyIncome+RelationshipSatisfaction+YearsSinceLastPromotion+(1|JobRole) ,data = attrition, family = binomial(link = "logit"))
-fixef(fit1)
-round(fixef(fit1), digits = 5)
+
+fix_effect <- round(fixef(fit1), digits = 5)
+
+round(exp(fix_effect) - 1, digits = 5)
+
 ranef(fit1)
+
+coef(fit1)
 ```
 
 
