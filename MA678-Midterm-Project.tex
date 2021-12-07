@@ -1,0 +1,509 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+]{article}
+\usepackage{amsmath,amssymb}
+\usepackage{lmodern}
+\usepackage{ifxetex,ifluatex}
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\hypersetup{
+  pdftitle={Midterm Project},
+  pdfauthor={Yifeng He},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+\urlstyle{same} % disable monospaced font for URLs
+\usepackage[margin=1in]{geometry}
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.77,0.63,0.00}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{longtable,booktabs,array}
+\usepackage{calc} % for calculating minipage widths
+% Correct order of tables after \paragraph or \subparagraph
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
+\makeatother
+% Allow footnotes in longtable head/foot
+\IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
+\makesavenoteenv{longtable}
+\usepackage{graphicx}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\ifluatex
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+
+\title{Midterm Project}
+\author{Yifeng He}
+\date{December 4, 2021}
+
+\begin{document}
+\maketitle
+
+\hypertarget{abstract}{%
+\subsection{Abstract}\label{abstract}}
+
+This report aims to examine the relationship between employee attrition
+and five predictors using logit multilevel model. The model indicates
+that age, monthly income, and relationship satisfaction have negative
+effects on probability of attrition, while distance from home and years
+since last promotion have positive effects on attrition. Reasons for the
+effects are mixed, and more considerations need to be included when
+applied in real world situations.
+
+\hypertarget{introduction}{%
+\subsection{Introduction}\label{introduction}}
+
+Employee attrition means the reduction of workforce because of
+retirement, death, sickness, and relocation, etc. Attrition is a natural
+process in companies that decreases the work force without much
+management efforts. Sometimes, however, unpredicted attrition may result
+in extra cost of continuing the project and training for new workers. To
+minimize the cost and the possible lost, companies are constantly trying
+to reduce the attrition. Some companies invest the process of hiring to
+find the right people, some provide comfortable working environments to
+employees, and some simply increase employees' salaries to increase
+their willingness to stay in the company. All those methods will improve
+attractiveness for employees, but attrition still happens.
+
+This report will use multilevel model to investigate what factors affect
+attrition and how they influence employees' decision. Based on the
+analysis, this report will also propose some ways to address the
+attrition problem.
+
+\hypertarget{method}{%
+\subsection{Method}\label{method}}
+
+\hypertarget{data-processing}{%
+\subsubsection{Data Processing}\label{data-processing}}
+
+The dataset used in this report is from Kaggle: IBM HR Analytics
+Employee Attrition \& Performance. The dataset includes responses of
+attrition from 1,470 subjects and their work-related conditions like
+total working years, salaries, and satisfaction, etc. After preliminary
+analysis of the data, I found that the dataset is already well written
+and cleaned, that it contains no useless information. Then I pick five
+variables that I am most interested in and listed below:
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.35}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.65}}@{}}
+\toprule
+Variables & Explanation \\
+\midrule
+\endhead
+Age & Age of the employee \\
+Distance From Home & Distance from company to home \\
+Environment Satisfaction & Satisfaction of working environment with 4
+levels \\
+Monthly Income & Monthly income of employee \\
+Total Working Years & Working years since the first career \\
+Years Since Last Promotion & Working years since last promotion \\
+\bottomrule
+\end{longtable}
+
+Next, I transferred the dataset into the long format that is suitable
+for exploratory data analysis (EDA).
+
+\hypertarget{exploratory-data-analysis}{%
+\subsubsection{Exploratory Data
+Analysis}\label{exploratory-data-analysis}}
+
+The radar plot below, figure 1, shows the mean value of the employees
+who want to leave (green) and to stay (pink) in five selected factors.
+The outer circle is the largest value of each factor from the dataset.
+From the plot, employees who choose not to leave have higher average
+monthly income than those who decide to leave. The same pattern shows in
+age, as older people have lower average attrition. Mean values for other
+factors have much less difference.
+
+Figure 1, average values for five factors
+
+To further see the difference between attrition and not attrition group,
+a comparative boxplot shows more information will help. Figure 2 shows
+the range, first and third quartiles, and median values for all five
+factors. Log(value) is used to improve the scale for the values. From
+figure 2, it is clear that Monthly Income, Distance From Home, and Age
+have the most distinguishable difference; Relationship Satisfaction and
+Year Since Last Promotion seems to be the same.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#group box plots}
+\NormalTok{attri\_try1 }\OtherTok{\textless{}{-}} \FunctionTok{pivot\_longer}\NormalTok{(attr\_try, }
+                           \AttributeTok{cols =} \FunctionTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{4}\NormalTok{, }\DecValTok{5}\NormalTok{, }\DecValTok{6}\NormalTok{),}
+                           \AttributeTok{names\_to =} \StringTok{"Factors"}\NormalTok{,}
+                           \AttributeTok{values\_to =} \StringTok{"value"}
+\NormalTok{                           )}
+\FunctionTok{ggplot}\NormalTok{(attri\_try1, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x=}\NormalTok{Factors, }\AttributeTok{y=}\FunctionTok{log}\NormalTok{(value), }\AttributeTok{fill=}\FunctionTok{factor}\NormalTok{(Attrition))) }\SpecialCharTok{+} 
+    \FunctionTok{geom\_boxplot}\NormalTok{()}\SpecialCharTok{+}
+  \FunctionTok{theme}\NormalTok{(}\AttributeTok{axis.text=}\FunctionTok{element\_text}\NormalTok{(}\AttributeTok{size=}\FloatTok{5.5}\NormalTok{, }\AttributeTok{face =} \StringTok{"bold"}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning: Removed 581 rows containing non-finite values (stat_boxplot).
+\end{verbatim}
+
+\begin{center}\includegraphics[width=0.9\linewidth]{MA678-Midterm-Project_files/figure-latex/unnamed-chunk-3-1} \end{center}
+
+Figure 2, boxplot
+
+Figure 3 shows the relationship between attrition or not and monthly
+income for all the job roles. It is noteworthy that different jobs react
+nearly opposite to increased amount of monthly income. Sales executive,
+healthcare representative, and research director show increasing trend
+of attrition when monthly income increases, though the slope is small.
+Other jobs show clear decrease of willingness for attrition when monthly
+income increases.
+
+Figure 3, monthly income vs.~attrition
+
+Figure 4a shows the relationship between attrition and the distance from
+work to home. Sales representative shows decreasing trend of attrition
+when distance from home increases; other jobs show increasing attrition
+trend when distance from home increases. Figure 4b reveals the
+connection between the time since last promotion and employee attrition.
+Sales representative, human resources, and lab technician have reduction
+in attrition when last promotion time increase; other jobs show the
+opposite effect that the longer the time from last promotion, the higher
+the attrition, but the overall slopes are low.
+
+Figure 4, distance from home and years from promotion vs.~attrition
+
+\hypertarget{model-fitting}{%
+\subsubsection{Model fitting}\label{model-fitting}}
+
+With different job roles as categories, the best model to fit the data
+is multilevel model. I choose 5 predictor variables, they are all
+continuous variables, and attrition, a binary variable, as the outcome.
+Since the outcome variable is binary, I will use logit multilevel model.
+Below is the function:
+
+The fixed effects of the model are shown in the table below:
+
+\hypertarget{result}{%
+\subsection{Result}\label{result}}
+
+Based on the logit multilevel model, the formula can be concluded as
+below:
+
+Logit(attrition) = -0.36 - 0.03\emph{Age + 0.03} Distance - \ldots{}
+
+For the above model, -0.36 means the probability of attrition for an
+employee with average age, average income, and all the rest factors as
+the average value. And for every one unit increase in age, the log odds
+of attrition with decrease 0.03 on average. To make it easier to
+understand, I will take the exp of the coefficients and transfer the
+model as below:
+
+Attrition = exp(-0.36 - 0.03\emph{Age + 0.03} Distance - \ldots) =0.70 *
+0.97\^{}Age * 1.03 \^{} Distance * \ldots{}
+
+The transferred model indicates that, with average age, distance from
+home, monthly income, etc., the odds of attrition is 0.7. For one unit
+increase in age, the odds of attrition will experience a multiplicative
+effect of 0.97, which means that the probability of attrition will
+decrease 3.0\%, when other predictors take the average values. Increase
+in distance from home will raise the probability of attrition by 2.7\%;
+monthly income will reduce the probability 0.007\%; relationship
+satisfaction will decrease attrition 10\%; and year since last promotion
+will increase the probability of attrition 3.6\%; all the changes of
+predictor is one unit with other factors as average values.
+
+From the model, it is clear that age, monthly income, and relationship
+satisfaction have negative effects for the probability of attrition,
+while distance from home and years since last promotion have positive
+effect on attrition.
+
+The binned residual plot below, Figure 5, shows that 95\% of the points
+are within the boundaries, so the model fits good. Since I use logit
+multilevel model, no other residual plots are needed.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{b1}\OtherTok{\textless{}{-}}\FunctionTok{binnedplot}\NormalTok{(}\FunctionTok{fitted}\NormalTok{(fit1),}\FunctionTok{resid}\NormalTok{(fit1, }\AttributeTok{type =} \StringTok{"response"}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics[width=0.9\linewidth]{MA678-Midterm-Project_files/figure-latex/unnamed-chunk-5-1} \end{center}
+
+Figure 5, binned residual plot
+
+\hypertarget{discussion}{%
+\subsection{Discussion}\label{discussion}}
+
+The transformed formula of the logit multilevel model shows that
+increase in age, monthly income, and relationship satisfaction will lead
+to low probability of attrition; on the opposite, distance from home and
+years since last promotion will increase the likelihood of attrition.
+
+Though all the factors influence the probability of attrition, the
+effects are very different. Take monthly income as an example, one unit
+of income increase only reduce the probability of attrition by 0.007\%.
+However, the increase of monthly income is usually by thousands, so when
+the income level increases, the reduction in attrition should be
+relatively large. As shown in figure 1, the difference between monthly
+income for attrition and not attrition groups are the most
+distinguishable factor. The large gap between the medians in figure 2
+also indicates that monthly income plays a significant role in affecting
+employment attrition.
+
+Other results are also easy to understand. Longer commute distance means
+the commute time is longer, the cost of going to work is higher, thus
+reduce the likelihood to stay in the company; longer time from promotion
+demonstrate that there is no room for improvement and employees may
+leave for other opportunities. Older people tend to stay in the company
+for they are less likely to move; employees with good intimate
+relationships usually satisfy with their environments. However, there is
+no casual relationships between these predictors and the attrition
+results. Unforeseen factors like family emergency or accident may also
+affect the attrition. Any single predictor also can not predict the
+results of attrition cause there is always complicated interactive
+factors that lead to the result.
+
+Future studies can include more factors into the model, and also examine
+the interactive effects between these variables. However, this
+correlated model never implicate true causational relationship between
+attrition and any of the factors. The real-world situation is much more
+complex than the model prediction, and time and efforts must be spend to
+reduce employee attrition.
+
+\hypertarget{citation}{%
+\subsection{Citation}\label{citation}}
+
+The citation is as below:
+
+\hypertarget{appendix}{%
+\subsection{Appendix}\label{appendix}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#scatter plots EDA}
+\NormalTok{plot1 }\OtherTok{\textless{}{-}}\NormalTok{ age\_point }\OtherTok{\textless{}{-}} \FunctionTok{ggplot}\NormalTok{(}\AttributeTok{data=}\NormalTok{attrition)}\SpecialCharTok{+}
+  \FunctionTok{geom\_point}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{x=}\NormalTok{Age,}\AttributeTok{y=}\NormalTok{Attrition,}\AttributeTok{color=}\NormalTok{JobRole), }\AttributeTok{alpha =} \FloatTok{0.3}\NormalTok{)}\SpecialCharTok{+}
+  \FunctionTok{geom\_smooth}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{x=}\NormalTok{Age,}\AttributeTok{y=}\NormalTok{Attrition,}\AttributeTok{color=}\NormalTok{JobRole), }\AttributeTok{method =} \StringTok{"lm"}\NormalTok{, }\AttributeTok{se =} \ConstantTok{FALSE}\NormalTok{)}\SpecialCharTok{+}
+  \FunctionTok{theme\_ipsum}\NormalTok{()}\SpecialCharTok{+}
+  \FunctionTok{theme}\NormalTok{(}\AttributeTok{legend.position =} \StringTok{"none"}\NormalTok{)}
+
+\NormalTok{plot2 }\OtherTok{\textless{}{-}} \FunctionTok{ggplot}\NormalTok{(}\AttributeTok{data=}\NormalTok{attrition)}\SpecialCharTok{+}
+  \FunctionTok{geom\_point}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{x=}\NormalTok{DistanceFromHome,}\AttributeTok{y=}\NormalTok{Attrition,}\AttributeTok{color=}\NormalTok{JobRole), }\AttributeTok{alpha =} \FloatTok{0.3}\NormalTok{)}\SpecialCharTok{+}
+  \FunctionTok{geom\_smooth}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{x=}\NormalTok{DistanceFromHome,}\AttributeTok{y=}\NormalTok{Attrition,}\AttributeTok{color=}\NormalTok{JobRole), }\AttributeTok{method =} \StringTok{"lm"}\NormalTok{, }\AttributeTok{se =} \ConstantTok{FALSE}\NormalTok{)}\SpecialCharTok{+}
+  \FunctionTok{theme\_ipsum}\NormalTok{()}\SpecialCharTok{+}
+  \FunctionTok{theme}\NormalTok{(}\AttributeTok{legend.position =} \StringTok{"none"}\NormalTok{)}
+
+\NormalTok{plot3 }\OtherTok{\textless{}{-}} \FunctionTok{ggplot}\NormalTok{(}\AttributeTok{data=}\NormalTok{attrition)}\SpecialCharTok{+}
+  \FunctionTok{geom\_point}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{x=}\NormalTok{MonthlyIncome,}\AttributeTok{y=}\NormalTok{Attrition,}\AttributeTok{color=}\NormalTok{JobRole), }\AttributeTok{alpha =} \FloatTok{0.3}\NormalTok{)}\SpecialCharTok{+}
+  \FunctionTok{geom\_smooth}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{x=}\NormalTok{MonthlyIncome,}\AttributeTok{y=}\NormalTok{Attrition,}\AttributeTok{color=}\NormalTok{JobRole), }\AttributeTok{method =} \StringTok{"lm"}\NormalTok{, }\AttributeTok{se =} \ConstantTok{FALSE}\NormalTok{)}\SpecialCharTok{+}
+  \FunctionTok{theme\_ipsum}\NormalTok{()}
+
+\FunctionTok{grid.arrange}\NormalTok{(plot1, plot2, plot3,}
+             \AttributeTok{layout\_matrix =} \FunctionTok{rbind}\NormalTok{(}\FunctionTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{,}\DecValTok{2}\NormalTok{),}
+                                   \FunctionTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{,}\DecValTok{2}\NormalTok{),}
+                                   \FunctionTok{c}\NormalTok{(}\DecValTok{3}\NormalTok{,}\DecValTok{3}\NormalTok{))}
+\NormalTok{             )}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## `geom_smooth()` using formula 'y ~ x'
+## `geom_smooth()` using formula 'y ~ x'
+## `geom_smooth()` using formula 'y ~ x'
+\end{verbatim}
+
+\begin{center}\includegraphics[width=0.9\linewidth]{MA678-Midterm-Project_files/figure-latex/unnamed-chunk-6-1} \end{center}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{plot4 }\OtherTok{\textless{}{-}} \FunctionTok{ggplot}\NormalTok{(}\AttributeTok{data=}\NormalTok{attrition)}\SpecialCharTok{+}
+  \FunctionTok{geom\_point}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{x=}\NormalTok{RelationshipSatisfaction,}\AttributeTok{y=}\NormalTok{Attrition,}\AttributeTok{color=}\NormalTok{JobRole), }\AttributeTok{alpha =} \FloatTok{0.3}\NormalTok{)}\SpecialCharTok{+}
+  \FunctionTok{geom\_smooth}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{x=}\NormalTok{TotalWorkingYears,}\AttributeTok{y=}\NormalTok{Attrition,}\AttributeTok{color=}\NormalTok{JobRole), }\AttributeTok{method =} \StringTok{"lm"}\NormalTok{, }\AttributeTok{se =} \ConstantTok{FALSE}\NormalTok{)}\SpecialCharTok{+}
+  \FunctionTok{theme\_ipsum}\NormalTok{()}\SpecialCharTok{+}
+  \FunctionTok{theme}\NormalTok{(}\AttributeTok{legend.position =} \StringTok{"none"}\NormalTok{)}
+
+\NormalTok{plot5 }\OtherTok{\textless{}{-}} \FunctionTok{ggplot}\NormalTok{(}\AttributeTok{data=}\NormalTok{attrition)}\SpecialCharTok{+}
+  \FunctionTok{geom\_point}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{x=}\NormalTok{YearsSinceLastPromotion,}\AttributeTok{y=}\NormalTok{Attrition,}\AttributeTok{color=}\NormalTok{JobRole), }\AttributeTok{alpha =} \FloatTok{0.3}\NormalTok{)}\SpecialCharTok{+}
+  \FunctionTok{geom\_smooth}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{x=}\NormalTok{YearsSinceLastPromotion,}\AttributeTok{y=}\NormalTok{Attrition,}\AttributeTok{color=}\NormalTok{JobRole), }\AttributeTok{method =} \StringTok{"lm"}\NormalTok{, }\AttributeTok{se =} \ConstantTok{FALSE}\NormalTok{)}\SpecialCharTok{+}
+  \FunctionTok{theme\_ipsum}\NormalTok{()}
+
+\FunctionTok{grid.arrange}\NormalTok{(plot4, plot5,}
+             \AttributeTok{layout\_matrix =} \FunctionTok{rbind}\NormalTok{(}\FunctionTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{,}\DecValTok{1}\NormalTok{,}\DecValTok{2}\NormalTok{,}\DecValTok{2}\NormalTok{,}\DecValTok{2}\NormalTok{))}
+\NormalTok{             )}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## `geom_smooth()` using formula 'y ~ x'
+## `geom_smooth()` using formula 'y ~ x'
+\end{verbatim}
+
+\begin{center}\includegraphics[width=0.9\linewidth]{MA678-Midterm-Project_files/figure-latex/unnamed-chunk-6-2} \end{center}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# ggplot(attrition)+aes(x=Age,y=Attrition,color=JobRole)+geom\_jitter()+geom\_smooth(aes(x=Age,y=Attrition,color=JobRole), method = "lm", se = FALSE)}
+\CommentTok{\# }
+\CommentTok{\# ggplot(data=attrition)+}
+\CommentTok{\#   geom\_point(aes(x=Age,y=Attrition,color=JobRole), alpha = 0.3)+}
+\CommentTok{\#   theme\_ipsum()+}
+\CommentTok{\#   geom\_jitter()+}
+\CommentTok{\#   geom\_smooth(aes(x=Age,y=Attrition,color=JobRole),color="blue")}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#marginal distribution EDA}
+\CommentTok{\# p \textless{}{-} ggplot(attrition, aes(x=MonthlyIncome,y=Attrition,color=JobRole)) +}
+\CommentTok{\#         geom\_point()}
+\CommentTok{\# }
+\CommentTok{\# ggMarginal(p, type="density")}
+\CommentTok{\# ggMarginal(p, type="histogram", fill = "slateblue", xparams = list(bins=10), margins = \textquotesingle{}x\textquotesingle{})}
+\CommentTok{\# ggMarginal(p, margins = \textquotesingle{}x\textquotesingle{}, color="purple", size=4)}
+
+\CommentTok{\#conditional density plot}
+\CommentTok{\# cdplot(factor(Attrition) \textasciitilde{} Age, data=attrition)}
+
+\CommentTok{\#violin plots}
+\CommentTok{\# ggplot(attrition, aes(x=JobRole, y=Age, fill=factor(Attrition))) +}
+\CommentTok{\#     geom\_violin() +}
+\CommentTok{\#     scale\_fill\_viridis(discrete = TRUE, alpha=0.6, option="A") +}
+\CommentTok{\#     theme\_ipsum() +}
+\CommentTok{\#     theme(}
+\CommentTok{\#       legend.position="none",}
+\CommentTok{\#       plot.title = element\_text(size=11)}
+\CommentTok{\#     ) +}
+\CommentTok{\#     ggtitle("Violin chart") +}
+\CommentTok{\#     xlab("")}
+\CommentTok{\# }
+\CommentTok{\# \#boxplot}
+\CommentTok{\# ggplot(attrition, aes(x=JobRole, y=Age, fill=factor(Attrition))) +}
+\CommentTok{\#     geom\_boxplot() +}
+\CommentTok{\#     scale\_fill\_viridis(discrete = TRUE, alpha=0.6) +}
+\CommentTok{\#     geom\_jitter(color="black", size=0.4, alpha=0.2) +}
+\CommentTok{\#     theme\_ipsum() +}
+\CommentTok{\#     theme(}
+\CommentTok{\#       legend.position="none",}
+\CommentTok{\#       plot.title = element\_text(size=11)}
+\CommentTok{\#     ) +}
+\CommentTok{\#     ggtitle("A boxplot with jitter") +}
+\CommentTok{\#     xlab("")}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#other EDAs}
+\CommentTok{\# ggplot(attrition, aes(x = \textasciigrave{}MonthlyIncome\textasciigrave{}, y = \textasciigrave{}JobRole\textasciigrave{}, fill = ..x..)) +}
+\CommentTok{\#   geom\_density\_ridges\_gradient(scale = 3, rel\_min\_height = 0.01) +}
+\CommentTok{\#   scale\_fill\_viridis(name = "Temp. [F]", option = "C") +}
+\CommentTok{\#   labs(title = \textquotesingle{}Temperatures in Lincoln NE in 2016\textquotesingle{}) +}
+\CommentTok{\#   theme\_ipsum() +}
+\CommentTok{\#     theme(}
+\CommentTok{\#       legend.position="none",}
+\CommentTok{\#       panel.spacing = unit(0.1, "lines"),}
+\CommentTok{\#       strip.text.x = element\_text(size = 8)}
+\CommentTok{\#     )}
+\CommentTok{\# }
+\CommentTok{\# ggplot(attrition, aes(x=Age, y=Attrition, size = MonthlyIncome, color = JobRole)) +}
+\CommentTok{\#     geom\_point(alpha=0.7)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{quote}
+\begin{quote}
+\begin{quote}
+\begin{quote}
+\begin{quote}
+\begin{quote}
+\begin{quote}
+9ae135952a0300875076d023246d7beba9bd26ab
+\end{quote}
+\end{quote}
+\end{quote}
+\end{quote}
+\end{quote}
+\end{quote}
+\end{quote}
+
+\end{document}
