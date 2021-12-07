@@ -1,0 +1,321 @@
+---
+title: "Midterm Project Final Report"
+author: "Yifeng He"
+date: "December 6, 2021"
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
+---
+
+```{r setup, include=FALSE, error=FALSE}
+knitr::opts_chunk$set(echo = TRUE,out.width="0.9\\linewidth",dev="png",fig.align  = 'center')
+pacman::p_load(
+ggplot2,
+knitr,
+arm,
+data.table,
+foreign,
+gridExtra,
+car,
+stringr,
+rstan,
+rstanarm,
+zoo,
+dplyr,
+tidyr,
+magrittr,
+hrbrthemes,
+ggExtra,
+stringr,
+viridis,
+ggridges,
+sure,
+fmsb,
+ggfortify
+)
+```
+
+
+## Abstract 
+
+This report aims to examine the relationship between employee attrition and five predictors using logit multilevel model. The model indicates that age, monthly income, and relationship satisfaction have negative effects on probability of attrition, while distance from home and years since last promotion have positive effects on attrition. Reasons for the effects are mixed, and more considerations need to be included when applied in real world situations.
+
+
+## Introduction 
+
+Employee attrition means the reduction of workforce because of retirement, death, sickness, and relocation, etc. Attrition is a natural process in companies that decreases the work force without much management efforts. Sometimes, however, unpredicted attrition may result in extra cost of continuing the project and training for new workers. To minimize the cost and the possible lost, companies are constantly trying to reduce the attrition. Some companies invest the process of hiring to find the right people, some provide comfortable working environments to employees, and some simply increase employees’ salaries to increase their willingness to stay in the company. All those methods will improve attractiveness for employees, but attrition still happens.
+	
+This report will use multilevel model to investigate what factors affect attrition and how they influence employees’ decision. Based on the analysis, this report will also propose some ways to address the attrition problem.
+
+
+## Method
+
+### Data Processing
+
+The dataset used in this report is from Kaggle: IBM HR Analytics Employee Attrition & Performance. The dataset includes responses of attrition from 1,470 subjects and their work-related conditions like total working years, salaries, and satisfaction, etc. After preliminary analysis of the data, I found that the dataset is already well written and cleaned, that it contains no useless information. Then I pick five variables that I am most interested in and listed below:
+
+```{r, include=FALSE}
+attrition <- read.csv('WA_Fn-UseC_-HR-Employee-Attrition.csv', header = T)
+
+#convert columns to numeric
+cols.num <- c("DistanceFromHome","Age","EnvironmentSatisfaction","MonthlyIncome","TotalWorkingYears","YearsSinceLastPromotion")
+attrition[cols.num] <- sapply(attrition[cols.num],as.numeric)
+sapply(attrition, class)
+
+attrition$Attrition<-ifelse(attrition$Attrition=="Yes",1,0)
+
+#variables I choose
+col1 <- c("Age","Distance From Home","Monthly Income","Relationship Satifaction","Years Since Last Promotion")
+exp1 <- c("Age of the employee",
+          "Distance from company to home",
+          "Monthly income of employee",
+          "Satisfaction of relationship",
+          "Working years since last promotion")
+df1 <- cbind(col1, exp1)
+colnames(df1) <- c("Variables", "Explanation")
+knitr::kable(df1, "pipe")
+```
+
+
+|Variables                  |Explanation                                       |
+|:--------------------------|:-------------------------------------------------|
+|Age                        |Age of the employee                               |
+|Distance From Home         |Distance from company to home                     |
+|Environment Satisfaction   |Satisfaction of working environment with 4 levels |
+|Monthly Income             |Monthly income of employee                        |
+|Total Working Years        |Working years since the first career              |
+|Years Since Last Promotion |Working years since last promotion                |	
+
+Next, I transferred the dataset into the long format that is suitable for exploratory data analysis (EDA).
+
+### Exploratory Data Analysis
+
+The radar plot below, figure 1, shows the mean value of the employees who want to leave (green) and to stay (pink) in five selected factors. The outer circle is the largest value of each factor from the dataset. From the plot, employees who choose not to leave have higher average monthly income than those who decide to leave. The same pattern shows in age, as older people have lower average attrition. Mean values for other factors have much less difference.
+
+```{r fig.height=6, fig.width=12, fig.cap='average values for five factors', echo=FALSE}
+#radar chart
+attr_try <- attrition[,c(1, 2, 6, 19, 26, 34)]
+
+attr1 <- attr_try[attr_try$Attrition == 1, ]
+attr0 <- attr_try[attr_try$Attrition == 0, ]
+
+attri<-as.data.frame(t(cbind(apply(attr1, 2, mean), apply(attr0, 2, mean))))
+
+dfmax <- apply(attr_try, 2, max)
+dfmin <- apply(attr_try, 2, min)
+
+attri_dim <- t(cbind(dfmax, dfmin))
+attri_final <- rbind(attri_dim, attri)
+
+# Color vector
+colors_border=c( rgb(0.2,0.5,0.5,0.9), rgb(0.8,0.2,0.5,0.9) , rgb(0.7,0.5,0.1,0.9) )
+colors_in=c( rgb(0.2,0.5,0.5,0.4), rgb(0.8,0.2,0.5,0.4) , rgb(0.7,0.5,0.1,0.4) )
+
+# plot with default options:
+radarchart(attri_final, 
+    pcol=colors_border , pfcol=colors_in , plwd=3 , plty=1,
+    cglcol="grey", cglty=1, axislabcol="grey", caxislabels=seq(0,20,5), cglwd=0.8,
+    vlcex=0.8
+    )
+
+legend(x=1.5, y=1.2, legend = c("Attrition", "Not Attrition"), 
+       bty = "n", 
+       pch=20, 
+       col=colors_in, 
+       cex=0.8, 
+       pt.cex=3
+       )
+```
+
+To further see the difference between attrition and not attrition group, a comparative boxplot shows more information will help. Figure 2 shows the range, first and third quartiles, and median values for all five factors. Log(value) is used to improve the scale for the values. From figure 2, it is clear that Monthly Income, Distance From Home, and Age have the most distinguishable difference; Relationship Satisfaction and Year Since Last Promotion seems to be the same.
+
+
+```{r fig.height=4, fig.width=8, fig.cap='boxplot', echo=FALSE, warning=FALSE}
+#group box plots
+attri_try1 <- pivot_longer(attr_try, 
+                           cols = c(1, 3, 4, 5, 6),
+                           names_to = "Factors",
+                           values_to = "value"
+                           )
+ggplot(attri_try1, aes(x=Factors, y=log(value), fill=factor(Attrition))) + 
+    geom_boxplot()+
+  theme(axis.text=element_text(size=5.5, face = "bold"))
+```
+
+Figure 3 shows the relationship between attrition or not and monthly income for all the job roles. It is noteworthy that different jobs react nearly opposite to increased amount of monthly income. Sales executive, healthcare representative, and research director show increasing trend of attrition when monthly income increases, though the slope is small. Other jobs show clear decrease of willingness for attrition when monthly income increases.
+
+```{r fig.height=4, fig.width=8, fig.cap='monthly income vs. attrition', echo=FALSE, warning=FALSE, message=FALSE}
+ggplot(data=attrition)+
+  geom_point(aes(x=MonthlyIncome,y=Attrition,color=JobRole), alpha = 0.3)+
+  geom_smooth(aes(x=MonthlyIncome,y=Attrition,color=JobRole), method = "lm", se = FALSE)+
+  theme_ipsum()
+```
+
+
+Figure 4a shows the relationship between attrition and the distance from work to home. Sales representative shows decreasing trend of attrition when distance from home increases; other jobs show increasing attrition trend when distance from home increases. Figure 4b reveals the connection between the time since last promotion and employee attrition. Sales representative, human resources, and lab technician have reduction in attrition when last promotion time increase; other jobs show the opposite effect that the longer the time from last promotion, the higher the attrition, but the overall slopes are low.
+
+```{r, fig.height=4.5, fig.width=9, fig.cap='distance from home (a) and years from promotion (b) vs. attrition', echo=FALSE, warning=FALSE, message=FALSE}
+plot2 <- ggplot(data=attrition)+
+  geom_point(aes(x=DistanceFromHome,y=Attrition,color=JobRole), alpha = 0.3)+
+  geom_smooth(aes(x=DistanceFromHome,y=Attrition,color=JobRole), method = "lm", se = FALSE)+
+  theme_ipsum()+
+  theme(legend.position = "none")
+
+plot5 <- ggplot(data=attrition)+
+  geom_point(aes(x=YearsSinceLastPromotion,y=Attrition,color=JobRole), alpha = 0.3)+
+  geom_smooth(aes(x=YearsSinceLastPromotion,y=Attrition,color=JobRole), method = "lm", se = FALSE)+
+  theme_ipsum()
+
+grid.arrange(plot2, plot5,
+             layout_matrix = rbind(c(1,1,2,2,2),
+                                   c(1,1,2,2,2)
+             )
+)
+```
+
+
+
+### Model fitting
+
+```{r, include=FALSE}
+#regression
+fit1<-glmer(Attrition~Age+DistanceFromHome+MonthlyIncome+RelationshipSatisfaction+YearsSinceLastPromotion+(1|JobRole) ,data = attrition, family = binomial(link = "logit"))
+
+# fix_effect <- round(fixef(fit1), digits = 5)
+
+# round(exp(fix_effect) - 1, digits = 5)
+# 
+# ranef(fit1)
+# 
+# coef(fit1)
+```
+
+With different job roles as categories, the best model to fit the data is multilevel model. I choose 5 predictor variables, they are all continuous variables, and attrition, a binary variable, as the outcome. Since the outcome variable is binary, I will use logit multilevel model. Below is the function:
+
+$$
+\begin{aligned}
+fit1 <- glmer(Attrition~Age+DistanceFromHome+MonthlyIncome+RelationshipSatisfaction+\\
+YearsSinceLastPromotion+(1|JobRole) ,data = attrition, family = binomial(link = "logit"))
+\end{aligned}
+$$
+The fixed effects of the model are shown in the table below:
+
+```{r echo=FALSE}
+fe1 <- round(fixef(fit1), digits = 5)
+knitr::kable(fe1, "pipe")
+```
+
+
+## Result
+
+Based on the logit multilevel model, the formula can be concluded as below:
+
+$$
+\begin{aligned}
+logit(attrition) = -0.36 - 0.03*Age + 0.03* Distance - 0.00007*MonthlyIncome\\ - 0.11*RelationshipSatissfaction + 0.04*YearSinceLastPromotion
+\end{aligned}
+$$
+
+For the above model, -0.36 means the probability of attrition for an employee with average age, average income, and all the rest factors as the average value. And for every one unit increase in age, the log odds of attrition with decrease 0.03 on average. To make it easier to understand, I will take the exp of the coefficients and transfer the model as below:
+
+$$
+\begin{aligned}
+Attrition = & exp(-0.36 - 0.03*Age + 0.03* Distance - 0.00007*MonthlyIncome\\  - & 0.11*RelationshipSatisfaction + 0.04*YearSinceLastPromotion)\\
+= & 0.70 * 0.97^{Age} * 1.03 ^ {DistanceFromHomwe} * 1.00 ^ {MonthlyIncome}\\
+&* 0.90 ^ {RelationshipSatisfaction} * 1.04 ^ {YearsSinceLastPromotion}
+\end{aligned}
+$$
+
+The transferred model indicates that, with average age, distance from home, monthly income, etc., the odds of attrition is 0.7. For one unit increase in age, the odds of attrition will experience a multiplicative effect of 0.97, which means that the probability of attrition will decrease 3.0%, when other predictors take the average values. Increase in distance from home will raise the probability of attrition by 2.7%; monthly income will reduce the probability 0.007%; relationship satisfaction will decrease attrition 10%; and year since last promotion will increase the probability of attrition 3.6%; all the changes of predictor is one unit with other factors as average values.
+
+From the model, it is clear that age, monthly income, and relationship satisfaction have negative effects for the probability of attrition, while distance from home and years since last promotion have positive effect on attrition. 
+
+### Model Validation
+
+The binned residual plot, in appendix, shows that 95% of the points are within the boundaries, so the model fits good. Since I use logit multilevel model, no other residual plots are needed.
+
+
+## Discussion
+
+The transformed formula of the logit multilevel model shows that increase in age, monthly income, and relationship satisfaction will lead to low probability of attrition; on the opposite, distance from home and years since last promotion will increase the likelihood of attrition. 
+
+Though all the factors influence the probability of attrition, the effects are very different. Take monthly income as an example, one unit of income increase only reduce the probability of attrition by 0.007%. However, the increase of monthly income is usually by thousands, so when the income level increases, the reduction in attrition should be relatively large. As shown in figure 1, the difference between monthly income for attrition and not attrition groups are the most distinguishable factor. The large gap between the medians in figure 2 also indicates that monthly income plays a significant role in affecting employment attrition. 
+
+Other results are also easy to understand. Longer commute distance means the commute time is longer, the cost of going to work is higher, thus reduce the likelihood to stay in the company; longer time from promotion demonstrate that there is no room for improvement and employees may leave for other opportunities. Older people tend to stay in the company for they are less likely to move; employees with good intimate relationships usually satisfy with their environments. However, there is no casual relationships between these predictors and the attrition results. Unforeseen factors like family emergency or accident may also affect the attrition. Any single predictor also can not predict the results of attrition cause there is always complicated interactive factors that lead to the result. 
+
+Future studies can include more factors into the model, and also examine the interactive effects between these variables. However, this correlated model never implicate true causational relationship between attrition and any of the factors. The real-world situation is much more complex than the model prediction, and time and efforts must be spend to reduce employee attrition.
+
+
+## Citation
+
+The citation is as below:
+
+Alao, D.O., & Adeyemo, A.B. (2013). ANALYZING EMPLOYEE ATTRITION USING DECISION TREE ALGORITHMS.
+
+Khan, Afaq & Khan, Sumaira. (2019). Factors Affecting Employee Attrition and Predictive Modelling Using IBM HR Data. Journal of Computational and Theoretical Nanoscience. 16. 3379-3383. 10.1166/jctn.2019.8296. 
+
+
+\newpage
+
+## Appendix
+
+### EDAs
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+#scatter plots EDA
+age_point <- ggplot(data=attrition)+
+  geom_point(aes(x=Age,y=Attrition,color=JobRole), alpha = 0.3)+
+  geom_smooth(aes(x=Age,y=Attrition,color=JobRole), method = "lm", se = FALSE)+
+  theme_ipsum()
+
+ggplot(data=attrition)+
+  geom_point(aes(x=RelationshipSatisfaction,y=Attrition,color=JobRole), alpha = 0.3)+
+  geom_smooth(aes(x=TotalWorkingYears,y=Attrition,color=JobRole), method = "lm", se = FALSE)+
+  theme_ipsum()
+
+ggplot(attrition, aes(x = `MonthlyIncome`, y = `JobRole`, fill = ..x..)) +
+  geom_density_ridges_gradient(scale = 3, rel_min_height = 0.01) +
+  scale_fill_viridis(name = "Temp. [F]", option = "C") +
+  labs(title = 'Monthly Income for all Job Roles') +
+  theme_ipsum() +
+    theme(
+      legend.position="none",
+      panel.spacing = unit(0.1, "lines"),
+      strip.text.x = element_text(size = 8)
+    )
+
+ggplot(attrition, aes(x=JobRole, y=Age, fill=factor(Attrition))) +
+    geom_boxplot() +
+    scale_fill_viridis(discrete = TRUE, alpha=0.6) +
+    geom_jitter(color="black", size=0.4, alpha=0.2) +
+    theme_ipsum() +
+    theme(
+      legend.position="none",
+      plot.title = element_text(size=15),
+      axis.text.x = element_text(size=6)
+    ) +
+    ggtitle("A boxplot with jitter for Age")
+```
+
+```{r fig.height=4, fig.width=8, fig.cap='binned residual plot', echo=FALSE}
+b1<-binnedplot(fitted(fit1),resid(fit1, type = "response"))
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
