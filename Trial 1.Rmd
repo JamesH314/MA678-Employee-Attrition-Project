@@ -303,7 +303,14 @@ b1<-binnedplot(fitted(fit1),resid(fit1, type = "response"))
 ```
 
 
+### Effects of the model
+```{r fig.height=4, fig.width=8, fig.cap='binned residual plot', echo=FALSE}
+round(fixef(fit1), digits = 5)
 
+ranef(fit1)
+
+coef(fit1)
+```
 
 
 
